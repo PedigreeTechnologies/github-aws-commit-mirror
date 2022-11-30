@@ -69,9 +69,9 @@ for repo in github_client.get_user().get_repos():
         print(f"{bcolors.WARNING}> Skipping repository {repo.name}, it is archived on github {bcolors.ENDC}")
     else:
         try:
+            print(f"{bcolors.HEADER}> Processing repository: {repo.name} {bcolors.ENDC}")
             repo.get_contents("/")
             branch_name = repo.default_branch
-            print(f"{bcolors.HEADER}> Processing repository: {repo.name} {bcolors.ENDC}")
             clone_repo(repo.name)
         except GithubException as e:
             print(e.args[1]['message']) # output: This repository is empty.
@@ -83,8 +83,4 @@ for repo in github_client.get_user().get_repos():
             create_repo_code_commit(repo.name)
             sync_code_commit_repo(repo.name,branch_name)
 
-        # repo.edit(default_branch='master')
         delete_repo_local(repo.name)
-
-
-#set default branch in aws
