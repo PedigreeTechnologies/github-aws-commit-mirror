@@ -69,7 +69,7 @@ for repo in github_client.get_user().get_repos():
     else:
         try:
             repo.get_contents("/")
-            branch_name = repo.default_branch()
+            branch_name = str(repo.default_branch())
             print(f"{bcolors.HEADER}> Processing repository: {repo.name} {bcolors.ENDC}")
             clone_repo(repo.name)
         except GithubException as e:
