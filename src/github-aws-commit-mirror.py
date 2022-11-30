@@ -65,7 +65,10 @@ for repo in github_client.get_user().get_repos():
     else:
         print(f"{bcolors.HEADER}> Processing repository: {repo.name} {bcolors.ENDC}")
         clone_repo(repo.name)
-
+        try:
+            repo.edit(default_branch='master')
+        except:
+            print("Could not set master as default")
         if is_repo_exists_on_aws(repo.name):
             sync_code_commit_repo(repo.name)
         else:
