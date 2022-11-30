@@ -65,9 +65,6 @@ def sync_code_commit_repo(repo_name,branch_name):
 
 
 for repo in github_client.get_user().get_repos():
-    # if repo.archived:
-    #     print(f"{bcolors.WARNING}> Skipping repository {repo.name}, it is archived on github {bcolors.ENDC}")
-    # else:
     try:
         print(f"{bcolors.HEADER}> Processing repository: {repo.name} {bcolors.ENDC}")
         repo.get_contents("/")
@@ -85,5 +82,3 @@ for repo in github_client.get_user().get_repos():
 
     delete_repo_local(repo.name)
 
-
-#TODO include archived repos
