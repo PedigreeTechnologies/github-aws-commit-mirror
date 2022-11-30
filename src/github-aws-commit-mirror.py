@@ -54,13 +54,13 @@ def create_repo_code_commit(repo_name):
     )
 
 
-def sync_code_commit_repo(repo_name):
+def sync_code_commit_repo(repo_name,branch_name):
     print(f"{bcolors.OKGREEN}--> Pushing changes from repository {repo_name} to AWS CodeCommit {bcolors.ENDC}")
     os.system('cd {} && git remote add sync ssh://{}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{}'.format(repo_name, AWS_SSH_KEY_ID, repo_name))
     os.system('cd {} && git push sync --mirror'.format(repo.name))
-    # codecommit_client.UpdateDefaultBranch(
-    #     defaultBranch= branch_name
-    # )
+    codecommit_client.UpdateDefaultBranch(
+        defaultBranch= branch_name
+    )
 
 
 for repo in github_client.get_user().get_repos():
@@ -69,7 +69,7 @@ for repo in github_client.get_user().get_repos():
     else:
         try:
             repo.get_contents("/")
-            print(repo.default_branch())
+            branch_name = repo.default_branch
             print(f"{bcolors.HEADER}> Processing repository: {repo.name} {bcolors.ENDC}")
             clone_repo(repo.name)
         except GithubException as e:
@@ -77,10 +77,10 @@ for repo in github_client.get_user().get_repos():
             continue
 
         if is_repo_exists_on_aws(repo.name):
-            sync_code_commit_repo(repo.name)
+            sync_code_commit_repo(repo.name,branch_name)
         else:
             create_repo_code_commit(repo.name)
-            sync_code_commit_repo(repo.name)
+            sync_code_commit_repo(repo.name,branch_name)
 
         # repo.edit(default_branch='master')
         delete_repo_local(repo.name)
