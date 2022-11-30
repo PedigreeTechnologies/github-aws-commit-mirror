@@ -71,6 +71,6 @@ for repo in github_client.get_user().get_repos():
         else:
             create_repo_code_commit(repo.name)
             sync_code_commit_repo(repo.name)
-            
-        repo.edit(default_branch='master')
+
+        # repo.edit(default_branch='master')
         delete_repo_local(repo.name)
