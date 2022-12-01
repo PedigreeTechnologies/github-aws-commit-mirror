@@ -93,7 +93,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
         flush=True,
     )
-    sync = os.system(
+    git_response = os.system(
         "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
