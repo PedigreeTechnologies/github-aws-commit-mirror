@@ -95,7 +95,7 @@ def sync_code_commit_repo(repo_name, def_branch):
     )
     cmd = "cd {} && git push sync --mirror".format(repo.name)
     git_output = subprocess.check_output(cmd,shell=True, stderr=subprocess.STDOUT, encoding='utf-8')
-    print(git_output, flush=True)
+    print("Git output: " + git_output, flush=True)
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
