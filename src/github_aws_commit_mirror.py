@@ -99,11 +99,11 @@ def sync_code_commit_repo(repo_name, def_branch):
             repo_name, AWS_SSH_KEY_ID
         )
     )
-    aaa = json.load(aa)
+    aaa = json.loads(aa)
 
     b = os.system("cd {} && git push sync --mirror".format(repo.name))
     bb = os.popen("cd {} && git push sync --mirror".format(repo.name))
-    bbb = json.load(bb)
+    bbb = json.loads(bb)
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
