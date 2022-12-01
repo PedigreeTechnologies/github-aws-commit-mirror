@@ -123,7 +123,7 @@ for repo in github_client.get_user().get_repos():
     else:
         create_repo_code_commit(repo.name)
         return_msg = sync_code_commit_repo(repo.name, branch_name)
-    if return_msg == "Everything up-to-date":
+    if "Everything up-to-date" in return_msg:
         # print("Git output: " + git_output, flush=True)
         print("Not backing up to s3", flush=True)
     else:
