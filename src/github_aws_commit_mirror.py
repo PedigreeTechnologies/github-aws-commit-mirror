@@ -91,11 +91,11 @@ def sync_code_commit_repo(repo_name, def_branch):
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
         )
-    x = subprocess.check_output(cmd,shell=True)
+    x = subprocess.check_output(cmd,shell=True, stderr=subprocess.STDOUT)
     print(x, flush=True)
 
     cmd2 = "cd {} && git push sync --mirror".format(repo.name)
-    y = subprocess.check_output(cmd2,shell=True)
+    y = subprocess.check_output(cmd2,shell=True, stderr=subprocess.STDOUT)
     print(y, flush=True)
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
