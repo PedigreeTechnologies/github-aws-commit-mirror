@@ -88,16 +88,10 @@ def sync_code_commit_repo(repo_name, def_branch):
         flush=True,
     )
     cmd = "cd {0} && git remote add sync \
-            ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0} > ~/tmp/output.txt".format(
+            ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
         )
-    os.system('mkdir ~/tmp/')
-    os.system(cmd)
-    fp = open('~/tmp/output.txt', "r")
-    output = fp.read()
-    fp.close()
-    os.remove('output.txt')
-    print(output)
+    subprocess.call(cmd,shell=True)
 
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
