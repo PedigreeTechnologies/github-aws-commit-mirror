@@ -94,7 +94,7 @@ def sync_code_commit_repo(repo_name, def_branch):
     except Exception as e:
         result = e
 
-    print(result)
+    print("Git Response: " + str(result))
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
@@ -103,7 +103,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
-    return git_response
+    # return result
 
 
 for repo in github_client.get_user().get_repos():
