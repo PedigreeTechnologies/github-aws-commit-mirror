@@ -114,7 +114,7 @@ def sync_code_commit_repo(repo_name, def_branch):
 
     print("a: " + str(a))
     print("b: " + str(b))
-    print("aa: " + str(aa))
+    print("aaa: " + str(aa))
     print("bbb: " + str(bb))
 
 
