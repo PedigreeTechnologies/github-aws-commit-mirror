@@ -91,6 +91,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0} > ~/tmp/output.txt".format(
             repo_name, AWS_SSH_KEY_ID
         )
+    os.system('mkdir ~/tmp/')
     os.system(cmd)
     if os.path.exists('~/tmp/output.txt'):
         fp = open('~/tmp/output.txt', "r")
