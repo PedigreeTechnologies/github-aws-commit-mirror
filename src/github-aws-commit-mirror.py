@@ -63,12 +63,12 @@ def sync_code_commit_repo(repo_name,branch_name):
     )
 
     print(response, flush=True)
-    # current_branch_name = response['defaultBranch']
-    # if current_branch_name != branch_name:
-    #     codecommit_client.update_default_branch(
-    #         repositoryName=repo_name,
-    #         defaultBranchName=branch_name
-    #     )
+    current_branch_name = response['repositoryMetadata']['defaultBranch']
+    if current_branch_name != branch_name:
+        codecommit_client.update_default_branch(
+            repositoryName=repo_name,
+            defaultBranchName=branch_name
+        )
 
 
 for repo in github_client.get_user().get_repos():
