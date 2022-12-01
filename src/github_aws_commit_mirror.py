@@ -1,15 +1,8 @@
-"""
-Script to mirror git repos
-to aws codecommit
-"""
-# pylint: disable=import-error
-# pylint: disable=broad-except
-# pylint: disable=consider-using-f-string
-import os
-import boto3
 import io
 import zipfile
 import subprocess
+import os
+import boto3
 from github import Github
 from github import GithubException
 
@@ -93,13 +86,13 @@ def sync_code_commit_repo(repo_name, def_branch):
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
         flush=True,
     )
-    git_output = os.system(
-        "cd {0} && git remote add sync \
+    cmd = "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
-            repo_name, AWS_SSH_KEY_ID
-        )
-    )
-    print("Git output: " + str(git_output), flush=True)
+            repo_name, AWS_SSH_KEY_ID)
+    git_response = os.system(cmd)
+    result = subprocess.check_output(cmd, shell=True, text=True)
+    print(result)
+    os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
@@ -107,7 +100,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
-    return
+    return git_response
 
 
 for repo in github_client.get_user().get_repos():
