@@ -9,7 +9,7 @@ import os
 import boto3
 import io
 import zipfile
-from subprocess import Popen, PIPE
+import subprocess
 from github import Github
 from github import GithubException
 
@@ -93,13 +93,16 @@ def sync_code_commit_repo(repo_name, def_branch):
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
         flush=True,
     )
-    git_response = os.system(
+    os.system(
         "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
         )
     )
-    print("Git Response: " + str(git_response))
+    git_output = subprocess.check_output("cd {0} && git remote add sync \
+            ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
+            repo_name, AWS_SSH_KEY_ID), shell=True)
+    print("Git Response: " + str(git_output))
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
