@@ -1,6 +1,5 @@
 import io
 import zipfile
-import subprocess
 import os
 import boto3
 from github import Github
@@ -86,16 +85,13 @@ def sync_code_commit_repo(repo_name, def_branch):
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
         flush=True,
     )
-    cmd = "cd {0} && git remote add sync \
+    a = os.system(
+        "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
-            repo_name, AWS_SSH_KEY_ID)
-    try:
-        result = subprocess.check_output(cmd, shell=True, text=True)
-    except Exception as e:
-        result = e
-
-    print("Git Response: " + str(result))
-    os.system("cd {} && git push sync --mirror".format(repo.name))
+            repo_name, AWS_SSH_KEY_ID
+        )
+    )
+    b = os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
@@ -103,7 +99,10 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
-    # return result
+
+    print("a: " + str(a))
+    print("b: " + str(b))
+
 
 
 for repo in github_client.get_user().get_repos():
