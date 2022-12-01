@@ -87,7 +87,7 @@ def sync_code_commit_repo(repo_name, default_branch):
         "cd {repo_name} && git remote add sync \
             ssh://{AWS_SSH_KEY_ID}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{repo_name}"
     )
-    os.system("cd {repo.name} && git push sync --mirror")
+    os.system('cd {} && git push sync --mirror'.format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != default_branch:
