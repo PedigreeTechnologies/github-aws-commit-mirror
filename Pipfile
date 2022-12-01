@@ -6,6 +6,8 @@ verify_ssl = true
 [packages]
 PyGithub = "==1.46"
 boto3 = "==1.10.41"
+io
+zipfile
 
 [requires]
 python_version = "3.8"
