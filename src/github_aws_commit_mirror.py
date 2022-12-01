@@ -91,7 +91,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
         )
-    subprocess.call(cmd,shell=True)
+    subprocess.check_output(cmd,shell=True)
 
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
