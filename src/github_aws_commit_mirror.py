@@ -87,23 +87,23 @@ def sync_code_commit_repo(repo_name, def_branch):
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
         flush=True,
     )
-    a = os.system(
+    os.system(
         "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
         )
     )
-    aa = os.popen(
+
+    try:
+        subprocess.check_output(
         "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
+            )
         )
-    ).read()
-    aaa = json.loads(aa)
-
-    b = os.system("cd {} && git push sync --mirror".format(repo.name))
-    bb = os.popen("cd {} && git push sync --mirror".format(repo.name)).read()
-    bbb = json.loads(bb)
+    except subprocess.CalledProcessError as err:
+        print(err)
+    os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
@@ -111,12 +111,6 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
-
-    print("a: " + str(a))
-    print("b: " + str(b))
-    print("aaa: " + str(aa))
-    print("bbb: " + str(bb))
-
 
 
 for repo in github_client.get_user().get_repos():
