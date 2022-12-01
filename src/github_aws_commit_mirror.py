@@ -81,7 +81,7 @@ def create_repo_code_commit(repo_name):
 
 
 def sync_code_commit_repo(repo_name, def_branch):
-       """sync codecommit repo"""
+    """sync codecommit repo"""
     print(
         f"{BColors.OKGREEN}--> Pushing changes from repository \
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
@@ -94,8 +94,8 @@ def sync_code_commit_repo(repo_name, def_branch):
         )
     )
     cmd = "cd {} && git push sync --mirror".format(repo.name)
-    y = subprocess.check_output(cmd,shell=True, stderr=subprocess.STDOUT,encoding='utf-8').strip()
-    print(y, flush=True)
+    git_output = subprocess.check_output(cmd,shell=True, stderr=subprocess.STDOUT, encoding='utf-8')
+    print(git_output, flush=True)
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
