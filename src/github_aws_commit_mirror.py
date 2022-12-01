@@ -126,4 +126,6 @@ for repo in github_client.get_user().get_repos():
     if return_msg == "Everything up-to-date":
         # print("Git output: " + git_output, flush=True)
         print("Not backing up to s3", flush=True)
+    else:
+        print(return_msg, flush=True)
     delete_repo_local(repo.name)
