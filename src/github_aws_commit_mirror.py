@@ -87,15 +87,19 @@ def sync_code_commit_repo(repo_name, def_branch):
             {repo_name} to AWS CodeCommit {BColors.ENDC}",
         flush=True,
     )
-    os.system(
-        "cd {0} && git remote add sync \
+    cmd = "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
         )
-    )
+    os.system(cmd + ' > output.txt')
+    if os.path.exists('output.txt'):
+        fp = open('output.txt', "r")
+        output = fp.read()
+        fp.close()
+        os.remove('output.txt')
+        print(output)
+
     os.system("cd {} && git push sync --mirror".format(repo.name))
-    x = subprocess.check_output("git remote add sync ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(repo_name, AWS_SSH_KEY_ID),shell=True,stderr=subprocess.STDOUT)
-    print(x)
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
