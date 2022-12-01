@@ -61,7 +61,7 @@ def sync_code_commit_repo(repo_name,branch_name):
     response = codecommit_client.get_repository(
     repositoryName=repo_name
     )
-    current_branch_name = response.defaultBranch
+    current_branch_name = response['defaultBranch']
     if current_branch_name != branch_name:
         codecommit_client.update_default_branch(
             repositoryName=repo_name,
