@@ -96,11 +96,11 @@ def sync_code_commit_repo(repo_name, def_branch):
         "cd {0} && git remote add sync \
             ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
             repo_name, AWS_SSH_KEY_ID
-        )
+        ).read()
     )
 
     b = os.system("cd {} && git push sync --mirror".format(repo.name))
-    bb = os.popen("cd {} && git push sync --mirror".format(repo.name))
+    bb = os.popen("cd {} && git push sync --mirror".format(repo.name)).read()
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
@@ -111,8 +111,8 @@ def sync_code_commit_repo(repo_name, def_branch):
 
     print("a: " + str(a))
     print("b: " + str(b))
-    print("a: " + str(aa))
-    print("b: " + str(bb))
+    print("aa: " + str(aa))
+    print("bb: " + str(bb))
 
 
 
