@@ -2,15 +2,16 @@
 Script to mirror git repos
 to aws codecommit
 """
-
 # pylint: disable=import-error
 # pylint: disable=broad-except
 # pylint: disable=consider-using-f-string
-
 import os
 import boto3
+import io
+import zipfile
 from github import Github
 from github import GithubException
+
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -39,6 +40,7 @@ class BColors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
+# def zip_file(repo_name):
 
 def clone_repo(repo_name):
     """Clone the repository"""
@@ -97,6 +99,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             repo_name, AWS_SSH_KEY_ID
         )
     )
+    print("Test")
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
@@ -105,6 +108,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
+    return
 
 
 for repo in github_client.get_user().get_repos():
