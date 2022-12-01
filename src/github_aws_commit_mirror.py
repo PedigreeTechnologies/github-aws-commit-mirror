@@ -88,12 +88,12 @@ def sync_code_commit_repo(repo_name, def_branch):
         flush=True,
     )
     cmd = "cd {0} && git remote add sync \
-            ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
+            ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0} > ~/tmp/output.txt".format(
             repo_name, AWS_SSH_KEY_ID
         )
-    os.system(cmd + ' > output.txt')
-    if os.path.exists('output.txt'):
-        fp = open('output.txt', "r")
+    os.system(cmd)
+    if os.path.exists('~/tmp/output.txt'):
+        fp = open('~/tmp/output.txt', "r")
         output = fp.read()
         fp.close()
         os.remove('output.txt')
