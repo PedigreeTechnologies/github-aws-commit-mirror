@@ -95,7 +95,6 @@ def sync_code_commit_repo(repo_name, def_branch):
     )
     cmd = "cd {} && git push sync --mirror".format(repo.name)
     git_output = subprocess.check_output(cmd,shell=True, stderr=subprocess.STDOUT, encoding='utf-8')
-    print("Git output: " + git_output, flush=True)
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
@@ -103,6 +102,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
+    return git_output
 
 
 for repo in github_client.get_user().get_repos():
@@ -119,9 +119,11 @@ for repo in github_client.get_user().get_repos():
         continue
 
     if is_repo_exists_on_aws(repo.name):
-        sync_code_commit_repo(repo.name, branch_name)
+        return_msg = sync_code_commit_repo(repo.name, branch_name)
     else:
         create_repo_code_commit(repo.name)
-        sync_code_commit_repo(repo.name, branch_name)
-
+        return_msg = sync_code_commit_repo(repo.name, branch_name)
+    if return_msg == "Everything up-to-date":
+        # print("Git output: " + git_output, flush=True)
+        print("Not backing up to s3", flush=True)
     delete_repo_local(repo.name)
