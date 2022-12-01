@@ -99,9 +99,12 @@ def sync_code_commit_repo(repo_name, def_branch):
             repo_name, AWS_SSH_KEY_ID
         )
     )
-    git_output = subprocess.check_output("cd {0} && git remote add sync \
-            ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
-            repo_name, AWS_SSH_KEY_ID), shell=True)
+    try:
+        git_output = subprocess.check_output("cd {0} && git remote add sync \
+                ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0}".format(
+                repo_name, AWS_SSH_KEY_ID), shell=True)
+    except Exception:
+        pass
     print("Git Response: " + str(git_output))
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
