@@ -1,21 +1,28 @@
-import io
-import zipfile
 import subprocess
 import os
 import boto3
-import json
+import shutil
 from github import Github
 from github import GithubException
+from datetime import datetime
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 GITHUB_API_TOKEN = os.getenv("GH_API_TOKEN")
 AWS_SSH_KEY_ID = os.getenv("AWS_SSH_KEY_ID")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+RUN_ID = os.getenv("GITHUB_RUN_ID")
 
 github_client = Github(GITHUB_API_TOKEN)
 
 codecommit_client = boto3.client(
     "codecommit",
+    region_name="us-east-1",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
+s3_client = boto3.resource(
+    "s3",
     region_name="us-east-1",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
@@ -35,6 +42,19 @@ class BColors:
     UNDERLINE = "\033[4m"
 
 # def zip_file(repo_name):
+def zip_to_s3(repo_name):
+    time_now = datetime.now()
+    time_stamp = time_now.strftime("%Y-%m-%dT%H-%M-%S")
+    fname = ("{0}__{1}__{2}".format(repo_name, RUN_ID, time_stamp))
+    archived_file = shutil.make_archive("{}".format(repo_name), 'zip', repo_name)
+    # with open(archived_file) as f:
+    try:
+        s3_client.upload_file(
+            archived_file,
+            S3_BUCKET_NAME,
+            "/{0}/{1}.zip".format(repo_name, fname))
+    except Exception as exp:
+        print('exp: ', exp)
 
 def clone_repo(repo_name):
     """Clone the repository"""
@@ -124,8 +144,7 @@ for repo in github_client.get_user().get_repos():
         create_repo_code_commit(repo.name)
         return_msg = sync_code_commit_repo(repo.name, branch_name)
     if "Everything up-to-date" in return_msg:
-        # print("Git output: " + git_output, flush=True)
-        print("Not backing up to s3", flush=True)
+        print("Up to date, not backing up to S3", flush=True)
     else:
-        print(return_msg, flush=True)
+        zip_to_s3(repo.name)
     delete_repo_local(repo.name)
