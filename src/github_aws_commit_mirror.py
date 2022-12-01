@@ -93,12 +93,11 @@ def sync_code_commit_repo(repo_name, def_branch):
         )
     os.system('mkdir ~/tmp/')
     os.system(cmd)
-    if os.path.exists('~/tmp/output.txt'):
-        fp = open('~/tmp/output.txt', "r")
-        output = fp.read()
-        fp.close()
-        os.remove('output.txt')
-        print(output)
+    fp = open('~/tmp/output.txt', "r")
+    output = fp.read()
+    fp.close()
+    os.remove('output.txt')
+    print(output)
 
     os.system("cd {} && git push sync --mirror".format(repo.name))
     response = codecommit_client.get_repository(repositoryName=repo_name)
