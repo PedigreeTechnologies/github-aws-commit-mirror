@@ -52,7 +52,7 @@ def zip_to_s3(repo_name):
         s3_client.upload_file(
             archived_file,
             S3_BUCKET_NAME,
-            "/{0}/{1}.zip".format(repo_name, fname))
+            "{0}/{1}.zip".format(repo_name, fname))
     except Exception as exp:
         print('exp: ', exp)
 
