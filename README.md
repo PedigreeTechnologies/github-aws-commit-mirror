@@ -6,10 +6,11 @@
 
 Credit for the original work goes to [@rribeiro1](https://github.com/rribeiro1)
 
-You can use this project to automate the replication of a source repository in Github to a repository in AWS CodeCommit, and it can be useful for:
+You can use this project to automate the replication of a source repository in Github to a repository in AWS CodeCommit and S3, and it can be useful for:
 
 - One-off task to migrate all active repositories to AWS CodeCommit
 - Continuous backup process to mirror Github repos to AWS CodeCommit
+- Backing up GitHub & CodeCommit repositories to AWS S3 buckets
 
 It was inspired on [this AWS article](https://aws.amazon.com/pt/blogs/devops/replicating-and-automating-sync-ups-for-a-repository-with-aws-codecommit/)
 however, instead of Jenkins and EC2 we are using Github Actions to create a Cronjob and executing a Python Script which fetches all repositories from an account
@@ -95,7 +96,18 @@ Everything up-to-date
 ...
 ```
 
-### 3. References
+### 3. Workflow
+
+The GitHub Action:
+
+1. Installs the default enviroment specified in the pipfile.
+2. Installs SSH keys for Github and AWS SSH.
+3. Clones all GitHub repositories under the account associated with the GitHub Token.
+4. Creates (if doesn't already exist) an idenital repository on AWS CodeCommit.
+5. Syncs the AWS CodeCommit repository if there are differences.
+6. Backs up repository to AWS S3 if there were changes since the last run.
+
+### 4. References
 
 - [Using IAM with CodeCommit: Git Credentials, SSH Keys, and AWS Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_ssh-keys.html)
 - [Add CodeCommit to Your SSH Configuration](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-without-cli.html#setting-up-without-cli-configure-client)
