@@ -103,7 +103,7 @@ The GitHub Action:
 1. Installs the default enviroment specified in the pipfile.
 2. Installs SSH keys for Github and AWS SSH.
 3. Clones all GitHub repositories under the account associated with the GitHub Token.
-4. Creates (if doesn't already exist) an idenital repository on AWS CodeCommit.
+4. Creates (if doesn't already exist) an identical repository on AWS CodeCommit.
 5. Syncs the AWS CodeCommit repository if there are differences.
 6. Backs up repository to AWS S3 if there were changes since the last run.
 
