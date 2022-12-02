@@ -1,10 +1,15 @@
+'''
+Python script to automate backing up GitHub
+Repositories to AWS CodeCommit and s3
+'''
 import subprocess
 import os
-import boto3
 import shutil
+from datetime import datetime
+import boto3
 from github import Github
 from github import GithubException
-from datetime import datetime
+
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -43,6 +48,7 @@ class BColors:
 
 # def zip_file(repo_name):
 def zip_to_s3(repo_name):
+    """Zip the file to s3 bucket"""
     time_now = datetime.now()
     time_stamp = time_now.strftime("%Y-%m-%dT%H-%M-%S")
     fname = ("{0}__{1}__{2}".format(repo_name, RUN_ID, time_stamp))
