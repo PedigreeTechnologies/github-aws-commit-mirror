@@ -1,26 +1,28 @@
-"""
-Script to mirror git repos
-to aws codecommit
-"""
-
-# pylint: disable=import-error
-# pylint: disable=broad-except
-# pylint: disable=consider-using-f-string
-
+import subprocess
 import os
 import boto3
+import shutil
 from github import Github
 from github import GithubException
+from datetime import datetime
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 GITHUB_API_TOKEN = os.getenv("GH_API_TOKEN")
 AWS_SSH_KEY_ID = os.getenv("AWS_SSH_KEY_ID")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+RUN_ID = os.getenv("GITHUB_RUN_ID")
 
 github_client = Github(GITHUB_API_TOKEN)
 
 codecommit_client = boto3.client(
     "codecommit",
+    region_name="us-east-1",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
+s3_client = boto3.client(
+    "s3",
     region_name="us-east-1",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
@@ -39,6 +41,20 @@ class BColors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
+# def zip_file(repo_name):
+def zip_to_s3(repo_name):
+    time_now = datetime.now()
+    time_stamp = time_now.strftime("%Y-%m-%dT%H-%M-%S")
+    fname = ("{0}__{1}__{2}".format(repo_name, RUN_ID, time_stamp))
+    archived_file = shutil.make_archive("{}".format(repo_name), 'zip', repo_name)
+    # with open(archived_file) as f:
+    try:
+        s3_client.upload_file(
+            archived_file,
+            S3_BUCKET_NAME,
+            "{0}/{1}.zip".format(repo_name, fname))
+    except Exception as exp:
+        print('exp: ', exp)
 
 def clone_repo(repo_name):
     """Clone the repository"""
@@ -97,7 +113,8 @@ def sync_code_commit_repo(repo_name, def_branch):
             repo_name, AWS_SSH_KEY_ID
         )
     )
-    os.system("cd {} && git push sync --mirror".format(repo.name))
+    cmd = "cd {} && git push sync --mirror".format(repo.name)
+    git_output = subprocess.check_output(cmd,shell=True, stderr=subprocess.STDOUT, encoding='utf-8')
     response = codecommit_client.get_repository(repositoryName=repo_name)
     current_branch_name = response["repositoryMetadata"]["defaultBranch"]
     if current_branch_name != def_branch:
@@ -105,6 +122,7 @@ def sync_code_commit_repo(repo_name, def_branch):
             repositoryName=repo_name, defaultBranchName=def_branch
         )
         print("Updating Default Branch To: " + def_branch)
+    return git_output
 
 
 for repo in github_client.get_user().get_repos():
@@ -121,9 +139,12 @@ for repo in github_client.get_user().get_repos():
         continue
 
     if is_repo_exists_on_aws(repo.name):
-        sync_code_commit_repo(repo.name, branch_name)
+        return_msg = sync_code_commit_repo(repo.name, branch_name)
     else:
         create_repo_code_commit(repo.name)
-        sync_code_commit_repo(repo.name, branch_name)
-
+        return_msg = sync_code_commit_repo(repo.name, branch_name)
+    if "Everything up-to-date" in return_msg:
+        print("Up to date, not backing up to S3", flush=True)
+    else:
+        zip_to_s3(repo.name)
     delete_repo_local(repo.name)
