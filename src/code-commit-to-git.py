@@ -1,6 +1,6 @@
 '''
-Python script to automate backing up GitHub
-Repositories to AWS CodeCommit and S3
+Python script to automate restoring
+github repositories from codecommit
 '''
 import os
 import boto3
@@ -68,7 +68,7 @@ def sync_git_repo(repo_name):
         repo_name
         )
     )
-    os.system("cd {} && git push sync --mirror".format(repo.name))
+    os.system("cd {} && git push sync --mirror".format(repo_name))
 
 
 def is_repo_exists_on_github(repo_name):
@@ -101,7 +101,7 @@ def delete_repo_local(repo_name):
 for repo in repos:
     repo_name = repo['repositoryName']
     print(
-    f"{BColors.HEADER}> Processing repository: {repo.name} {BColors.ENDC}",
+    f"{BColors.HEADER}> Processing repository: {repo_name} {BColors.ENDC}",
     flush=True,
     )
     clone_code_commit(repo_name)
