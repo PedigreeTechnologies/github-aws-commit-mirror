@@ -1,6 +1,6 @@
 '''
 Python script to automate backing up GitHub
-Repositories to AWS CodeCommit and s3
+Repositories to AWS CodeCommit and S3
 '''
 import subprocess
 import os
@@ -9,7 +9,6 @@ from datetime import datetime
 import boto3
 from github import Github
 from github import GithubException
-
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -46,14 +45,13 @@ class BColors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
-# def zip_file(repo_name):
+
 def zip_to_s3(repo_name):
     """Zip the file to s3 bucket"""
     time_now = datetime.now()
     time_stamp = time_now.strftime("%Y-%m-%dT%H-%M-%S")
     fname = ("{0}__{1}__{2}".format(repo_name, RUN_ID, time_stamp))
     archived_file = shutil.make_archive("{}".format(repo_name), 'zip', repo_name)
-    # with open(archived_file) as f:
     try:
         s3_client.upload_file(
             archived_file,
@@ -61,6 +59,7 @@ def zip_to_s3(repo_name):
             "{0}/{1}.zip".format(repo_name, fname))
     except Exception as exp:
         print('exp: ', exp)
+
 
 def clone_repo(repo_name):
     """Clone the repository"""
@@ -76,7 +75,7 @@ def clone_repo(repo_name):
 
 
 def delete_repo_local(repo_name):
-    """Clone local repository"""
+    """Delete local repository"""
     print(
         f"{BColors.OKGREEN}--> Deleting repository {repo_name} from local storage {BColors.ENDC}",
         flush=True,
