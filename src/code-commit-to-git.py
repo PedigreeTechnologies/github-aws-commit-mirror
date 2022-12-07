@@ -1,7 +1,7 @@
-'''
+"""
 Python script to automate restoring
 github repositories from codecommit
-'''
+"""
 import os
 import boto3
 from github import Github
@@ -22,12 +22,10 @@ codecommit_client = boto3.client(
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
 )
 
-response = codecommit_client.describe_repositories(
-    nextToken='string',
-    maxResults=123
-)
+response = codecommit_client.describe_repositories(nextToken="string", maxResults=123)
 
-repos = response['repositories']
+repos = response["repositories"]
+
 
 class BColors:
     """Define print colors"""
@@ -49,8 +47,9 @@ def clone_code_commit(repo_name):
         flush=True,
     )
     os.system(
-    "git clone --mirror ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0} {0}".format(
-        repo_name, AWS_SSH_KEY_ID,
+        "git clone --mirror ssh://{1}@git-codecommit.us-east-1.amazonaws.com/v1/repos/{0} {0}".format(
+            repo_name,
+            AWS_SSH_KEY_ID,
         )
     )
 
@@ -63,9 +62,9 @@ def sync_git_repo(repo_name):
         flush=True,
     )
     os.system(
-    "cd {0} && git remote add sync \
+        "cd {0} && git remote add sync \
         https://github.com/PedigreeTechnologies/{0}.git".format(
-        repo_name
+            repo_name
         )
     )
     os.system("cd {} && git push sync --mirror".format(repo_name))
@@ -86,7 +85,11 @@ def create_git_repo(repo_name):
         f"{BColors.OKGREEN}--> Creating Repository {repo_name} on Github {BColors.ENDC}",
         flush=True,
     )
-    os.system("git remote add origin git@github.com:PedigreeTechnologies/{0}.git".format(repo_name))
+    os.system(
+        "git remote add origin git@github.com:PedigreeTechnologies/{0}.git".format(
+            repo_name
+        )
+    )
 
 
 def delete_repo_local(repo_name):
@@ -99,10 +102,10 @@ def delete_repo_local(repo_name):
 
 
 for repo in repos:
-    repo_name = repo['repositoryName']
+    repo_name = repo["repositoryName"]
     print(
-    f"{BColors.HEADER}> Processing repository: {repo_name} {BColors.ENDC}",
-    flush=True,
+        f"{BColors.HEADER}> Processing repository: {repo_name} {BColors.ENDC}",
+        flush=True,
     )
     clone_code_commit(repo_name)
     if is_repo_exists_on_github(repo_name):
