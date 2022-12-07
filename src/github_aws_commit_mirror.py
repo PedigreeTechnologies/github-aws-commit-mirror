@@ -75,7 +75,7 @@ def clone_repo(repo_name):
 
 
 def delete_repo_local(repo_name):
-    """Clone local repository"""
+    """Delete local repo"""
     print(
         f"{BColors.OKGREEN}--> Deleting repository {repo_name} from local storage {BColors.ENDC}",
         flush=True,
