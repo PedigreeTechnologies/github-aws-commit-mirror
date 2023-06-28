@@ -1,4 +1,6 @@
-# github-aws-commit-mirror
+# github-aws-commit-mirror (Archived)
+
+**This project fork has been archived.** Due to GitHub disabling Actions automatically after 60 days on an inactive repo, without notification, this became a bad solution for us. In light of this, we have moved this job to an internal Jenkins server, where it will run until the cows come home.
 
 [![python](https://upload.wikimedia.org/wikipedia/commons/a/a5/Blue_Python_3.8_Shield_Badge.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
